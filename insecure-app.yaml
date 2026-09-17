@@ -23,14 +23,15 @@ spec:
         - name: AWS_SECRET_ACCESS_KEY
           value: wJalrXUtnFEMI/K7MDENG/bPxRfiCYeh2g7ykyu8
         securityContext:
-          privileged: true
-        volumeMounts:                   
-        - name: docker-socket
-          mountPath: /var/run/docker.sock
-      volumes:                         
-      - name: docker-socket
-        hostPath:
-          path: /var/run/docker.sock
+          # Removed privileged mode and enforced non-root execution
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: false  # Set to false to allow /uploads directory writes
+        # Removed Docker socket mount to prevent host Docker daemon access
       serviceAccountName: insecure-app-sa
 ---
 kind: Service
